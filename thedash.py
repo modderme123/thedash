@@ -16,6 +16,7 @@ names[2] = "Steady Freddy"
 # PETERMILO
 names[3] = "Equilizer"
 names[4] = "Skyrocket"
+names[5] = "BudgetEquilizer"
 
 
 def controller(num, mypos, myfunds, distances):
@@ -29,6 +30,8 @@ def controller(num, mypos, myfunds, distances):
         return Equilizer(mypos, myfunds, distances)
     elif num == 4:
         return Skyrocket(mypos, myfunds, distances)
+    elif num == 5:
+        return BudgetEquilizer(mypos, myfunds, distances)
 
 
 players = random.sample(range(5), 5)
