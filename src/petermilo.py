@@ -1,3 +1,4 @@
+# hi there
 def Equilizer(pos, funds, dist):
     bid0 = 3000 * dist[0]
     bid1 = 3000 * dist[1]
