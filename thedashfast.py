@@ -3,12 +3,17 @@
 ############################################
 
 import random
-names = [''] * 40
+import pygame
+
 from src.drv import *
+from src.petermilo import *
+
+names = [''] * 40
+# DRV
 names[0] = "Random Runner"
 names[1] = "Off Like A Shot"
 names[2] = "Steady Freddy"
-from src.petermilo import *
+# PETERMILO
 names[3] = "Equilizer"
 names[4] = "Skyrocket"
 
@@ -34,7 +39,6 @@ positions = [0] * 15
 funds = [1000000] * 5
 teamscores = [0] * 5
 
-import pygame
 pygame.init()
 screen = pygame.display.set_mode((1000, 650))
 background = pygame.Surface((1000, 650))
@@ -84,6 +88,13 @@ def display():
         screen.blit(text, (850 - width, 55 + 120 * j))
     pygame.display.flip()
 
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            mainloop = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                mainloop = False
+
 
 ##############################
 ## CONTROLLER RUNS THE RACE ##
@@ -96,15 +107,6 @@ pygame.time.wait(500)
 
 mainloop = True
 while (funds[0] >= 0 or funds[1] >= 0 or funds[2] >= 0 or funds[3] >= 0 or funds[4] >= 0) and mainloop:
-
-    # ACCEPT EVENTS TO QUIT
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            mainloop = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                mainloop = False
 
     # GATHER BIDS
 

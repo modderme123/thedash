@@ -166,8 +166,7 @@ while (funds[0] >= 0 or funds[1] >= 0 or funds[2] >= 0 or funds[3] >= 0 or funds
     if mediumwinbid >= 0:
         index = int(mediumindex / 3)
         funds[index] -= mediumwinbid
-        increments[mediumindex] = min(
-            distances[1], 100 - positions[mediumindex])
+        increments[mediumindex] = min(distances[1], 100 - positions[mediumindex])
     if shortwinbid >= 0:
         index = int(shortindex / 3)
         funds[index] -= shortwinbid
