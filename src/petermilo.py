@@ -29,10 +29,11 @@ def Equilizer(pos, funds, dist):
                 ["short", "medium", "long"][bestdist], funds[0]]
     return bids
 
-def BudgetEquilizer(pos, funds, dist):
-    bid0 = 2500 * dist[0]
-    bid1 = 2500 * dist[1]
-    bid2 = 2500 * dist[2]
+def RandomEquilizer(pos, funds, dist):
+    import random
+    bid0 = random.randint(2500,3500) * dist[0]
+    bid1 = random.randint(2500,3500) * dist[1]
+    bid2 = random.randint(2500,3500) * dist[2]
     bids = [0, 0, 0]
     donecount = [0, 1, 2]
 
