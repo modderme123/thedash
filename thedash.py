@@ -34,7 +34,7 @@ def controller(num, mypos, myfunds, distances):
         return RandomEquilizer(mypos, myfunds, distances)
 
 
-players = random.sample(range(6),6)
+players = random.sample(range(6), 6)
 
 place = 1
 rankings = [0] * 15
@@ -136,7 +136,6 @@ while (funds[0] >= 0 or funds[1] >= 0 or funds[2] >= 0 or funds[3] >= 0 or funds
             bids += mybids
         else:
             bids += 3 * [['short', -1]]
-
 
     # DETERMINE WINNING BIDS FOR EACH DISTANCE
 
