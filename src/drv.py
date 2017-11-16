@@ -16,6 +16,7 @@ def randomrunner(pos, funds, dist):
         bid2 = 0
     return [['short', bid0], ['medium', bid1], ['long', bid2]]
 
+
 # always bids a certain fraction of available funds on each distance
 
 
@@ -28,6 +29,7 @@ def offlikeashot(pos, funds, dist):
     if dist[2] < 100:
         bid2 = int(dollars / 10)
     return [['long', bid0], ['medium', bid1], ['short', bid2]]
+
 
 # always bid proportionally to the distance
 

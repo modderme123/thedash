@@ -49,7 +49,6 @@ smallfont = pygame.font.SysFont('arial', 20)
 medfont = pygame.font.SysFont('copperplate', 40)
 largefont = pygame.font.SysFont('georgia', 60)
 
-
 # DRAW BACKGROUND
 
 colors = [(50, 200, 200), (250, 125, 0), (50, 50, 200), (50, 200, 50), (200, 50, 200)]

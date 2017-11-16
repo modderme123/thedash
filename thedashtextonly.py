@@ -49,8 +49,7 @@ while funds[0] >= 0 or funds[1] >= 0 or funds[2] >= 0 or funds[3] >= 0 or funds[
         if funds[j] >= 0:
             mypos, myfunds = positions[:], funds[:]
             myfunds[0], myfunds[j] = myfunds[j], myfunds[0]
-            mypos[0:3], mypos[3 * j:3 * j +
-                              3] = mypos[3 * j:3 * j + 3], mypos[0:3]
+            mypos[0:3], mypos[3 * j:3 * j + 3] = mypos[3 * j:3 * j + 3], mypos[0:3]
             mybids = controller(players[j], mypos, myfunds, distances)
             total = 0
             for k in range(3):
@@ -69,7 +68,6 @@ while funds[0] >= 0 or funds[1] >= 0 or funds[2] >= 0 or funds[3] >= 0 or funds[
         else:
             bids += 3 * [['short', -1]]
 
-
     # DETERMINE WINNING BIDS FOR EACH DISTANCE
 
     shortwinbid, mediumwinbid, longwinbid = -1, -1, -1
@@ -87,7 +85,6 @@ while funds[0] >= 0 or funds[1] >= 0 or funds[2] >= 0 or funds[3] >= 0 or funds[
                 longwinbid = bids[j][1]
                 longindex = j
 
-
     # ADVANCE RUNNERS, DEBIT ACCOUNTS, ASSIGN RANKS AS RUNNERS FINISH
 
     if longwinbid >= 0:
@@ -102,8 +99,7 @@ while funds[0] >= 0 or funds[1] >= 0 or funds[2] >= 0 or funds[3] >= 0 or funds[
     if mediumwinbid >= 0:
         index = int(mediumindex / 3)
         funds[index] -= mediumwinbid
-        positions[mediumindex] = min(
-            positions[mediumindex] + distances[1], 100)
+        positions[mediumindex] = min(positions[mediumindex] + distances[1], 100)
         if positions[mediumindex] == 100 and rankings[mediumindex] == 0:
             rankings[mediumindex] = place
             place += 1

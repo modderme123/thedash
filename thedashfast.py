@@ -46,7 +46,6 @@ smallfont = pygame.font.SysFont('arial', 20)
 medfont = pygame.font.SysFont('copperplate', 40)
 largefont = pygame.font.SysFont('georgia', 60)
 
-
 # DRAW BACKGROUND
 
 colors = [(50, 200, 200), (250, 125, 0), (50, 50, 200), (50, 200, 50), (200, 50, 200)]
@@ -134,7 +133,6 @@ while (funds[0] >= 0 or funds[1] >= 0 or funds[2] >= 0 or funds[3] >= 0 or funds
             bids += mybids
         else:
             bids += 3 * [['short', -1]]
-
 
     # DETERMINE WINNING BIDS FOR EACH DISTANCE
 

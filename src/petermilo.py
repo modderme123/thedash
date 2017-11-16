@@ -25,15 +25,15 @@ def Equilizer(pos, funds, dist):
                 bestdist = j
                 finishing = True
         if finishing:
-            bids[donecount[0]] = [
-                ["short", "medium", "long"][bestdist], funds[0]]
+            bids[donecount[0]] = [["short", "medium", "long"][bestdist], funds[0]]
     return bids
+
 
 def RandomEquilizer(pos, funds, dist):
     import random
-    bid0 = random.randint(2500,3500) * dist[0]
-    bid1 = random.randint(2500,3500) * dist[1]
-    bid2 = random.randint(2500,3500) * dist[2]
+    bid0 = random.randint(2500, 3500) * dist[0]
+    bid1 = random.randint(2500, 3500) * dist[1]
+    bid2 = random.randint(2500, 3500) * dist[2]
     bids = [0, 0, 0]
     donecount = [0, 1, 2]
 
@@ -57,9 +57,9 @@ def RandomEquilizer(pos, funds, dist):
                 bestdist = j
                 finishing = True
         if finishing:
-            bids[donecount[0]] = [
-                ["short", "medium", "long"][bestdist], funds[0]]
+            bids[donecount[0]] = [["short", "medium", "long"][bestdist], funds[0]]
     return bids
+
 
 def Skyrocket(pos, funds, dist):
     bid0 = 3300 * dist[0]
