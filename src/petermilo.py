@@ -29,6 +29,36 @@ def Equilizer(pos, funds, dist):
                 ["short", "medium", "long"][bestdist], funds[0]]
     return bids
 
+def BudgetEquilizer(pos, funds, dist):
+    bid0 = 2500 * dist[0]
+    bid1 = 2500 * dist[1]
+    bid2 = 2500 * dist[2]
+    bids = [0, 0, 0]
+    donecount = [0, 1, 2]
+
+    for j in range(3):
+        if pos[j] >= pos[(j + 1) % 3] and pos[j] >= pos[(j + 2) % 3] and (["short", bid0] not in bids):
+            bids[j] = ["short", bid0]
+        elif pos[j] <= pos[(j + 1) % 3] and pos[j] <= pos[(j + 2) % 3] and (["long", bid0] not in bids):
+            bids[j] = ["long", bid2]
+        if pos[j] == 100:
+            donecount.remove(j)
+
+    for j in range(3):
+        if bids[j] == 0:
+            bids[j] = ["medium", bid1]
+
+    if len(donecount) == 1:
+        bestdist = 2
+        finishing = False
+        for j in range(2, -1, -1):
+            if dist[j] + pos[donecount[0]] >= 100:
+                bestdist = j
+                finishing = True
+        if finishing:
+            bids[donecount[0]] = [
+                ["short", "medium", "long"][bestdist], funds[0]]
+    return bids
 
 def Skyrocket(pos, funds, dist):
     bid0 = 3300 * dist[0]
