@@ -88,6 +88,13 @@ def display():
         screen.blit(text, (850 - width, 55 + 120 * j))
     pygame.display.flip()
 
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            mainloop = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                mainloop = False
+
 
 ##############################
 ## CONTROLLER RUNS THE RACE ##
@@ -100,16 +107,6 @@ pygame.time.wait(500)
 
 mainloop = True
 while (funds[0] >= 0 or funds[1] >= 0 or funds[2] >= 0 or funds[3] >= 0 or funds[4] >= 0) and mainloop:
-
-    # ACCEPT EVENTS TO QUIT
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            mainloop = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                mainloop = False
-
     # GATHER BIDS
 
     bids = []
@@ -176,7 +173,6 @@ while (funds[0] >= 0 or funds[1] >= 0 or funds[2] >= 0 or funds[3] >= 0 or funds
     for j in range(15):
         increments[j] = increments[j] / 100
     for _ in range(100):
-        pygame.event.get()
         for j in range(15):
             positions[j] += increments[j]
         display()
