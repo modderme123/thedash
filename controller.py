@@ -3,7 +3,7 @@ import random
 from src.drv import *
 from src.petermilo import *
 
-names = [''] * 40
+names = [''] * 6
 # DRV
 names[0] = "Random Runner"
 names[1] = "Off Like A Shot"
@@ -29,72 +29,96 @@ def controller(num, mypos, myfunds, distances):
         return RandomEquilizer(mypos, myfunds, distances)
 
 
-players = random.sample(range(6), 5)
+class Controller:
+    def __init__(self):
+        self.players = random.sample(range(len(names)), 5)
+        self.place = 1
+        self.rankings = [0] * 15
+        self.positions = [0] * 15
+        self.funds = [1000000] * 5
+        self.teamscores = [0] * 5
 
-place = 1
-rankings = [0] * 15
-positions = [0] * 15
-funds = [1000000] * 5
-teamscores = [0] * 5
+    def gatherBids(self, distances):
+        self.bids = []
+        for j in range(5):
+            if self.funds[j] >= 0:
+                mypos, myfunds = self.positions[:], self.funds[:]
+                myfunds[0], myfunds[j] = myfunds[j], myfunds[0]
+                mypos[0:3], mypos[3 * j:3 * j + 3] = mypos[3 * j:3 * j + 3], mypos[0:3]
+                mybids = controller(self.players[j], mypos, myfunds, distances)
+                total = 0
+                for k in range(3):
+                    value = max(int(mybids[k][1]), 0)
+                    total += value
+                    if total <= self.funds[j]:
+                        mybids[k][1] = value
+                    else:
+                        total -= value
+                        mybids[k][1] = 0
+                    if self.rankings[3 * j + k] > 0:
+                        mybids[k][1] = -1
+                    if mybids[k][0] not in ['short', 'medium', 'long']:
+                        mybids[k][0] = 'short'
+                self.bids += mybids
+            else:
+                self.bids += 3 * [['short', -1]]
 
+    def winningBids(self):
+        self.shortwinbid, self.mediumwinbid, self.longwinbid = -1, -1, -1
+        self.shortindex, self.mediumindex, self.longindex = -1, -1, -1
+        for j in range(15):
+            if self.bids[j][0] == 'short':
+                if self.bids[j][1] > self.shortwinbid:
+                    self.shortwinbid = self.bids[j][1]
+                    self.shortindex = j
+            elif self.bids[j][0] == 'medium':
+                if self.bids[j][1] > self.mediumwinbid:
+                    self.mediumwinbid = self.bids[j][1]
+                    self.mediumindex = j
+            else:
+                if self.bids[j][1] > self.longwinbid:
+                    self.longwinbid = self.bids[j][1]
+                    self.longindex = j
 
-def gatherBids(distances):
-    bids = []
-    for j in range(5):
-        if funds[j] >= 0:
-            mypos, myfunds = positions[:], funds[:]
-            myfunds[0], myfunds[j] = myfunds[j], myfunds[0]
-            mypos[0:3], mypos[3 * j:3 * j + 3] = mypos[3 * j:3 * j + 3], mypos[0:3]
-            mybids = controller(players[j], mypos, myfunds, distances)
-            total = 0
+    def instantAdvance(self, distances):
+        if self.longwinbid >= 0:
+            index = int(self.longindex / 3)
+            self.funds[index] -= self.longwinbid
+            self.positions[self.longindex] = min(self.positions[self.longindex] + distances[2], 100)
+            if self.positions[self.longindex] == 100 and self.rankings[self.longindex] == 0:
+                self.rankings[self.longindex] = self.place
+                self.place += 1
+                if self.rankings[index * 3] > 0 and self.rankings[index * 3 + 1] > 0 and self.rankings[index * 3 + 2] > 0:
+                    self.funds[index] = -1
+        if self.mediumwinbid >= 0:
+            index = int(self.mediumindex / 3)
+            self.funds[index] -= self.mediumwinbid
+            self.positions[self.mediumindex] = min(self.positions[self.mediumindex] + distances[1], 100)
+            if self.positions[self.mediumindex] == 100 and self.rankings[self.mediumindex] == 0:
+                self.rankings[self.mediumindex] = self.place
+                self.place += 1
+                if self.rankings[index * 3] > 0 and self.rankings[index * 3 + 1] > 0 and self.rankings[index * 3 + 2] > 0:
+                    self.funds[index] = -1
+        if self.shortwinbid >= 0:
+            index = int(self.shortindex / 3)
+            self.funds[index] -= self.shortwinbid
+            self.positions[self.shortindex] = min(self.positions[self.shortindex] + distances[0], 100)
+            if self.positions[self.shortindex] == 100 and self.rankings[self.shortindex] == 0:
+                self.rankings[self.shortindex] = self.place
+                self.place += 1
+                if self.rankings[index * 3] > 0 and self.rankings[index * 3 + 1] > 0 and self.rankings[index * 3 + 2] > 0:
+                    self.funds[index] = -1
+
+    def updateScores(self):
+        for j in range(5):
+            score = 0
             for k in range(3):
-                value = max(int(mybids[k][1]), 0)
-                total += value
-                if total <= funds[j]:
-                    mybids[k][1] = value
-                else:
-                    total -= value
-                    mybids[k][1] = 0
-                if rankings[3 * j + k] > 0:
-                    mybids[k][1] = -1
-                if mybids[k][0] not in ['short', 'medium', 'long']:
-                    mybids[k][0] = 'short'
-            bids += mybids
-        else:
-            bids += 3 * [['short', -1]]
-    return bids
+                if self.rankings[3 * j + k] > 0:
+                    score += 100 - (self.rankings[3 * j + k] * (self.rankings[3 * j + k] - 1)) / 2
+            self.teamscores[j] = int(score)
 
-
-def winningBids(bids):
-    shortwinbid, mediumwinbid, longwinbid = -1, -1, -1
-    shortindex, mediumindex, longindex = -1, -1, -1
-    for j in range(15):
-        if bids[j][0] == 'short':
-            if bids[j][1] > shortwinbid:
-                shortwinbid = bids[j][1]
-                shortindex = j
-        elif bids[j][0] == 'medium':
-            if bids[j][1] > mediumwinbid:
-                mediumwinbid = bids[j][1]
-                mediumindex = j
-        else:
-            if bids[j][1] > longwinbid:
-                longwinbid = bids[j][1]
-                longindex = j
-
-    return (shortwinbid, shortindex), (mediumwinbid, mediumindex), (longwinbid, longindex)
-
-
-def updateScores():
-    for j in range(5):
-        score = 0
-        for k in range(3):
-            if rankings[3 * j + k] > 0:
-                score += 100 - (rankings[3 * j + k] * (rankings[3 * j + k] - 1)) / 2
-        teamscores[j] = int(score)
-
-
-def printScores():
-    print("Final scores for each of the five teams:")
-    for j in range(5):
-        print(names[j] + ": " + str(teamscores[j]))
+    def printScores(self):
+        print("Scores for each of the five teams this round:")
+        ordered = sorted(zip(self.teamscores, [names[j] for j in self.players]), reverse=True)
+        for score, name in ordered:
+            print(name + ": " + str(score))
