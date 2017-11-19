@@ -4,43 +4,7 @@
 
 import random
 import pygame
-
-from src.drv import *
-from src.petermilo import *
-
-names = [''] * 40
-# DRV
-names[0] = "Random Runner"
-names[1] = "Off Like A Shot"
-names[2] = "Steady Freddy"
-# PETERMILO
-names[3] = "Equilizer"
-names[4] = "Skyrocket"
-names[5] = "RandomEquilizer"
-
-
-def controller(num, mypos, myfunds, distances):
-    if num == 0:
-        return randomrunner(mypos, myfunds, distances)
-    elif num == 1:
-        return offlikeashot(mypos, myfunds, distances)
-    elif num == 2:
-        return steadyfreddy(mypos, myfunds, distances)
-    elif num == 3:
-        return Equilizer(mypos, myfunds, distances)
-    elif num == 4:
-        return Skyrocket(mypos, myfunds, distances)
-    elif num == 5:
-        return RandomEquilizer(mypos, myfunds, distances)
-
-
-players = random.sample(range(6), 6)
-
-place = 1
-rankings = [0] * 15
-positions = [0] * 15
-funds = [1000000] * 5
-teamscores = [0] * 5
+from controller import *
 
 pygame.init()
 screen = pygame.display.set_mode((1000, 650))
@@ -89,13 +53,7 @@ def display():
         width = text.get_width()
         screen.blit(text, (850 - width, 55 + 120 * j))
     pygame.display.flip()
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            mainloop = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                mainloop = False
+    pygame.event.pump()
 
 
 ##############################
@@ -103,58 +61,26 @@ def display():
 ##############################
 
 display()
-pygame.time.wait(500)
 
 # GATHER BIDS, CLEAN UP VALUES
 
 mainloop = True
 while (funds[0] >= 0 or funds[1] >= 0 or funds[2] >= 0 or funds[3] >= 0 or funds[4] >= 0) and mainloop:
-    # GATHER BIDS
 
-    bids = []
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            break
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                break
+
     distances = [random.randint(10, 19), random.randint(20, 29), random.randint(30, 39)]
-    for j in range(5):
-        if funds[j] >= 0:
-            mypos, myfunds = positions[:], funds[:]
-            myfunds[0], myfunds[j] = myfunds[j], myfunds[0]
-            mypos[0:3], mypos[3 * j:3 * j + 3] = mypos[3 * j:3 * j + 3], mypos[0:3]
-            mybids = controller(players[j], mypos, myfunds, distances)
-            total = 0
-            for k in range(3):
-                value = max(int(mybids[k][1]), 0)
-                total += value
-                if total <= funds[j]:
-                    mybids[k][1] = value
-                else:
-                    total -= value
-                    mybids[k][1] = 0
-                if rankings[3 * j + k] > 0:
-                    mybids[k][1] = -1
-                if mybids[k][0] not in ['short', 'medium', 'long']:
-                    mybids[k][0] = 'short'
-            bids += mybids
-        else:
-            bids += 3 * [['short', -1]]
 
-    # DETERMINE WINNING BIDS FOR EACH DISTANCE
+    bids = gatherBids(distances)
 
-    shortwinbid, mediumwinbid, longwinbid = -1, -1, -1
-    for j in range(15):
-        if bids[j][0] == 'short':
-            if bids[j][1] > shortwinbid:
-                shortwinbid = bids[j][1]
-                shortindex = j
-        elif bids[j][0] == 'medium':
-            if bids[j][1] > mediumwinbid:
-                mediumwinbid = bids[j][1]
-                mediumindex = j
-        else:
-            if bids[j][1] > longwinbid:
-                longwinbid = bids[j][1]
-                longindex = j
+    (shortwinbid, shortindex), (mediumwinbid, mediumindex), (longwinbid, longindex) = winningBids(bids)
 
     # ADVANCE RUNNERS, DEBIT ACCOUNTS, ASSIGN RANKS AS RUNNERS FINISH
-
     increments = [0] * 15
 
     if longwinbid >= 0:
@@ -201,17 +127,10 @@ while (funds[0] >= 0 or funds[1] >= 0 or funds[2] >= 0 or funds[3] >= 0 or funds
             if rankings[index * 3] > 0 and rankings[index * 3 + 1] > 0 and rankings[index * 3 + 2] > 0:
                 funds[index] = -1
 
-    for j in range(5):
-        score = 0
-        for k in range(3):
-            if rankings[3 * j + k] > 0:
-                score += 100 - (rankings[3 * j + k] * (rankings[3 * j + k] - 1)) / 2
-        teamscores[j] = int(score)
+    updateScores()
 
     display()
     pygame.time.wait(200)
 
-for j in range(5):
-    print(names[j] + ": " + str(teamscores[j]))
-
 pygame.quit()
+printScores()
