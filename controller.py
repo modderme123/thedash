@@ -38,14 +38,17 @@ class Controller:
         self.funds = [1000000] * 5
         self.teamscores = [0] * 5
 
-    def gatherBids(self, distances):
+    def setDistances(self):
+        self.distances = [random.randint(10, 19), random.randint(20, 29), random.randint(30, 39)]
+
+    def gatherBids(self):
         self.bids = []
         for j in range(5):
             if self.funds[j] >= 0:
                 mypos, myfunds = self.positions[:], self.funds[:]
                 myfunds[0], myfunds[j] = myfunds[j], myfunds[0]
                 mypos[0:3], mypos[3 * j:3 * j + 3] = mypos[3 * j:3 * j + 3], mypos[0:3]
-                mybids = controller(self.players[j], mypos, myfunds, distances)
+                mybids = controller(self.players[j], mypos, myfunds, self.distances)
                 total = 0
                 for k in range(3):
                     value = max(int(mybids[k][1]), 0)
@@ -80,34 +83,21 @@ class Controller:
                     self.longwinbid = self.bids[j][1]
                     self.longindex = j
 
-    def instantAdvance(self, distances):
-        if self.longwinbid >= 0:
-            index = int(self.longindex / 3)
-            self.funds[index] -= self.longwinbid
-            self.positions[self.longindex] = min(self.positions[self.longindex] + distances[2], 100)
-            if self.positions[self.longindex] == 100 and self.rankings[self.longindex] == 0:
-                self.rankings[self.longindex] = self.place
+    def payMove(self, runner, bid, size):
+        if bid >= 0:
+            index = int(runner / 3)
+            self.funds[index] -= bid
+            self.positions[runner] = min(self.positions[runner] + self.distances[size], 100)
+            if self.positions[runner] == 100 and self.rankings[runner] == 0:
+                self.rankings[runner] = self.place
                 self.place += 1
                 if self.rankings[index * 3] > 0 and self.rankings[index * 3 + 1] > 0 and self.rankings[index * 3 + 2] > 0:
                     self.funds[index] = -1
-        if self.mediumwinbid >= 0:
-            index = int(self.mediumindex / 3)
-            self.funds[index] -= self.mediumwinbid
-            self.positions[self.mediumindex] = min(self.positions[self.mediumindex] + distances[1], 100)
-            if self.positions[self.mediumindex] == 100 and self.rankings[self.mediumindex] == 0:
-                self.rankings[self.mediumindex] = self.place
-                self.place += 1
-                if self.rankings[index * 3] > 0 and self.rankings[index * 3 + 1] > 0 and self.rankings[index * 3 + 2] > 0:
-                    self.funds[index] = -1
-        if self.shortwinbid >= 0:
-            index = int(self.shortindex / 3)
-            self.funds[index] -= self.shortwinbid
-            self.positions[self.shortindex] = min(self.positions[self.shortindex] + distances[0], 100)
-            if self.positions[self.shortindex] == 100 and self.rankings[self.shortindex] == 0:
-                self.rankings[self.shortindex] = self.place
-                self.place += 1
-                if self.rankings[index * 3] > 0 and self.rankings[index * 3 + 1] > 0 and self.rankings[index * 3 + 2] > 0:
-                    self.funds[index] = -1
+
+    def instantAdvance(self):
+        self.payMove(self.longindex, self.longwinbid, 2)
+        self.payMove(self.mediumindex, self.mediumwinbid, 1)
+        self.payMove(self.shortindex, self.shortwinbid, 0)
 
     def updateScores(self):
         for j in range(5):

@@ -1,5 +1,5 @@
 ############################################
-## INITIALIZING game.players AND PYGAME SCREEN ##
+## INITIALIZING PLAYERS AND PYGAME SCREEN ##
 ############################################
 
 import random
@@ -68,7 +68,6 @@ display()
 
 mainloop = True
 while (game.funds[0] >= 0 or game.funds[1] >= 0 or game.funds[2] >= 0 or game.funds[3] >= 0 or game.funds[4] >= 0) and mainloop:
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             break
@@ -76,10 +75,8 @@ while (game.funds[0] >= 0 or game.funds[1] >= 0 or game.funds[2] >= 0 or game.fu
             if event.key == pygame.K_ESCAPE:
                 break
 
-    distances = [random.randint(10, 19), random.randint(20, 29), random.randint(30, 39)]
-
-    game.gatherBids(distances)
-
+    game.setDistances()
+    game.gatherBids()
     game.winningBids()
 
     # ADVANCE RUNNERS, DEBIT ACCOUNTS, ASSIGN RANKS AS RUNNERS FINISH
@@ -88,15 +85,15 @@ while (game.funds[0] >= 0 or game.funds[1] >= 0 or game.funds[2] >= 0 or game.fu
     if game.longwinbid >= 0:
         index = int(game.longindex / 3)
         game.funds[index] -= game.longwinbid
-        increments[game.longindex] = min(distances[2], 100 - game.positions[game.longindex])
+        increments[game.longindex] = min(game.distances[2], 100 - game.positions[game.longindex])
     if game.mediumwinbid >= 0:
         index = int(game.mediumindex / 3)
         game.funds[index] -= game.mediumwinbid
-        increments[game.mediumindex] = min(distances[1], 100 - game.positions[game.mediumindex])
+        increments[game.mediumindex] = min(game.distances[1], 100 - game.positions[game.mediumindex])
     if game.shortwinbid >= 0:
         index = int(game.shortindex / 3)
         game.funds[index] -= game.shortwinbid
-        increments[game.shortindex] = min(distances[0], 100 - game.positions[game.shortindex])
+        increments[game.shortindex] = min(game.distances[0], 100 - game.positions[game.shortindex])
 
     for j in range(15):
         increments[j] = increments[j] / 100
