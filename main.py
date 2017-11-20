@@ -37,6 +37,7 @@ for j in range(5):
 
 
 def display():
+    pygame.event.pump()
     screen.blit(background, (0, 0))
     for j in range(5):
         text = smallfont.render('$' + str(max(game.funds[j], 0)), 1, (255, 255, 255), (0, 0, 0))
@@ -55,7 +56,6 @@ def display():
         width = text.get_width()
         screen.blit(text, (850 - width, 55 + 120 * j))
     pygame.display.flip()
-    pygame.event.pump()
 
 
 ##############################
@@ -67,7 +67,7 @@ display()
 # GATHER BIDS, CLEAN UP VALUES
 
 mainloop = True
-while (game.funds[0] >= 0 or game.funds[1] >= 0 or game.funds[2] >= 0 or game.funds[3] >= 0 or game.funds[4] >= 0) and mainloop:
+while any(x >= 0 for x in game.funds) and mainloop:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             break
@@ -82,21 +82,12 @@ while (game.funds[0] >= 0 or game.funds[1] >= 0 or game.funds[2] >= 0 or game.fu
     # ADVANCE RUNNERS, DEBIT ACCOUNTS, ASSIGN RANKS AS RUNNERS FINISH
     increments = [0] * 15
 
-    if game.longwinbid >= 0:
-        index = int(game.longindex / 3)
-        game.funds[index] -= game.longwinbid
-        increments[game.longindex] = min(game.distances[2], 100 - game.positions[game.longindex])
-    if game.mediumwinbid >= 0:
-        index = int(game.mediumindex / 3)
-        game.funds[index] -= game.mediumwinbid
-        increments[game.mediumindex] = min(game.distances[1], 100 - game.positions[game.mediumindex])
-    if game.shortwinbid >= 0:
-        index = int(game.shortindex / 3)
-        game.funds[index] -= game.shortwinbid
-        increments[game.shortindex] = min(game.distances[0], 100 - game.positions[game.shortindex])
+    for j in reversed(range(3)):
+        if game.winbids[j] >= 0:
+            index = int(game.winindex[j] / 3)
+            game.funds[index] -= game.winbids[j]
+            increments[game.winindex[j]] = min(game.distances[j], 100 - game.positions[game.winindex[j]]) / 100
 
-    for j in range(15):
-        increments[j] = increments[j] / 100
     for _ in range(100):
         for j in range(15):
             game.positions[j] += increments[j]
@@ -104,27 +95,14 @@ while (game.funds[0] >= 0 or game.funds[1] >= 0 or game.funds[2] >= 0 or game.fu
     for j in range(15):
         game.positions[j] = int(game.positions[j] + 0.5)
 
-    if game.longwinbid >= 0:
-        index = int(game.longindex / 3)
-        if game.positions[game.longindex] == 100 and game.rankings[game.longindex] == 0:
-            game.rankings[game.longindex] = game.place
-            game.place += 1
-            if game.rankings[index * 3] > 0 and game.rankings[index * 3 + 1] > 0 and game.rankings[index * 3 + 2] > 0:
-                game.funds[index] = -1
-    if game.mediumwinbid >= 0:
-        index = int(game.mediumindex / 3)
-        if game.positions[game.mediumindex] == 100 and game.rankings[game.mediumindex] == 0:
-            game.rankings[game.mediumindex] = game.place
-            game.place += 1
-            if game.rankings[index * 3] > 0 and game.rankings[index * 3 + 1] > 0 and game.rankings[index * 3 + 2] > 0:
-                game.funds[index] = -1
-    if game.shortwinbid >= 0:
-        index = int(game.shortindex / 3)
-        if game.positions[game.shortindex] == 100 and game.rankings[game.shortindex] == 0:
-            game.rankings[game.shortindex] = game.place
-            game.place += 1
-            if game.rankings[index * 3] > 0 and game.rankings[index * 3 + 1] > 0 and game.rankings[index * 3 + 2] > 0:
-                game.funds[index] = -1
+    for j in reversed(range(3)):
+        if game.winbids[j] >= 0:
+            index = int(game.winindex[j] / 3)
+            if game.positions[game.winindex[j]] == 100 and game.rankings[game.winindex[j]] == 0:
+                game.rankings[game.winindex[j]] = game.place
+                game.place += 1
+                if all(x > 0 for x in game.rankings[index * 3:index * 3 + 3]):
+                    game.funds[index] = -1
 
     game.updateScores()
 

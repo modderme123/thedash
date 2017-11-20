@@ -4,29 +4,15 @@ from src.drv import *
 from src.petermilo import *
 
 names = [''] * 6
+funcs = [None] * 6
 # DRV
-names[0] = "Random Runner"
-names[1] = "Off Like A Shot"
-names[2] = "Steady Freddy"
+names[0], funcs[0] = "Random Runner", randomrunner
+names[1], funcs[1] = "Off Like A Shot", offlikeashot
+names[2], funcs[2] = "Steady Freddy", steadyfreddy
 # PETERMILO
-names[3] = "Equilizer"
-names[4] = "Skyrocket"
-names[5] = "RandomEquilizer"
-
-
-def controller(num, mypos, myfunds, distances):
-    if num == 0:
-        return randomrunner(mypos, myfunds, distances)
-    elif num == 1:
-        return offlikeashot(mypos, myfunds, distances)
-    elif num == 2:
-        return steadyfreddy(mypos, myfunds, distances)
-    elif num == 3:
-        return Equilizer(mypos, myfunds, distances)
-    elif num == 4:
-        return Skyrocket(mypos, myfunds, distances)
-    elif num == 5:
-        return RandomEquilizer(mypos, myfunds, distances)
+names[3], funcs[3] = "Equilizer", Equilizer
+names[4], funcs[4] = "Skyrocket", Skyrocket
+names[5], funcs[5] = "RandomEquilizer", RandomEquilizer
 
 
 class Controller:
@@ -39,7 +25,7 @@ class Controller:
         self.teamscores = [0] * 5
 
     def setDistances(self):
-        self.distances = [random.randint(10, 19), random.randint(20, 29), random.randint(30, 39)]
+        self.distances = [random.randint(x, x + 9) for x in range(10, 40, 10)]
 
     def gatherBids(self):
         self.bids = []
@@ -48,7 +34,7 @@ class Controller:
                 mypos, myfunds = self.positions[:], self.funds[:]
                 myfunds[0], myfunds[j] = myfunds[j], myfunds[0]
                 mypos[0:3], mypos[3 * j:3 * j + 3] = mypos[3 * j:3 * j + 3], mypos[0:3]
-                mybids = controller(self.players[j], mypos, myfunds, self.distances)
+                mybids = funcs[self.players[j]](mypos, myfunds, self.distances)
                 total = 0
                 for k in range(3):
                     value = max(int(mybids[k][1]), 0)
@@ -67,37 +53,26 @@ class Controller:
                 self.bids += 3 * [['short', -1]]
 
     def winningBids(self):
-        self.shortwinbid, self.mediumwinbid, self.longwinbid = -1, -1, -1
-        self.shortindex, self.mediumindex, self.longindex = -1, -1, -1
+        self.winbids = [-1] * 3
+        self.winindex = [-1] * 3
+        distDict = {'short': 0, 'medium': 1, 'long': 2}
         for j in range(15):
-            if self.bids[j][0] == 'short':
-                if self.bids[j][1] > self.shortwinbid:
-                    self.shortwinbid = self.bids[j][1]
-                    self.shortindex = j
-            elif self.bids[j][0] == 'medium':
-                if self.bids[j][1] > self.mediumwinbid:
-                    self.mediumwinbid = self.bids[j][1]
-                    self.mediumindex = j
-            else:
-                if self.bids[j][1] > self.longwinbid:
-                    self.longwinbid = self.bids[j][1]
-                    self.longindex = j
-
-    def payMove(self, runner, bid, size):
-        if bid >= 0:
-            index = int(runner / 3)
-            self.funds[index] -= bid
-            self.positions[runner] = min(self.positions[runner] + self.distances[size], 100)
-            if self.positions[runner] == 100 and self.rankings[runner] == 0:
-                self.rankings[runner] = self.place
-                self.place += 1
-                if self.rankings[index * 3] > 0 and self.rankings[index * 3 + 1] > 0 and self.rankings[index * 3 + 2] > 0:
-                    self.funds[index] = -1
+            bidtype = distDict[self.bids[j][0]]
+            if self.bids[j][1] > self.winbids[bidtype]:
+                self.winbids[bidtype] = self.bids[j][1]
+                self.winindex[bidtype] = j
 
     def instantAdvance(self):
-        self.payMove(self.longindex, self.longwinbid, 2)
-        self.payMove(self.mediumindex, self.mediumwinbid, 1)
-        self.payMove(self.shortindex, self.shortwinbid, 0)
+        for i in reversed(range(3)):
+            if self.winbids[i] >= 0:
+                index = int(self.winindex[i] / 3)
+                self.funds[index] -= self.winbids[i]
+                self.positions[self.winindex[i]] = min(self.positions[self.winindex[i]] + self.distances[i], 100)
+                if self.positions[self.winindex[i]] == 100 and self.rankings[self.winindex[i]] == 0:
+                    self.rankings[self.winindex[i]] = self.place
+                    self.place += 1
+                    if all(x > 0 for x in self.rankings[index * 3:index * 3 + 3]):
+                        self.funds[index] = -1
 
     def updateScores(self):
         for j in range(5):

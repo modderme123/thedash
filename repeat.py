@@ -3,7 +3,7 @@ from controller import *
 scoresums = [0] * len(names)
 for _ in range(1000):
     game = Controller()
-    while game.funds[0] >= 0 or game.funds[1] >= 0 or game.funds[2] >= 0 or game.funds[3] >= 0 or game.funds[4] >= 0:
+    while any(x >= 0 for x in game.funds):
         game.setDistances()
         game.gatherBids()
         game.winningBids()
