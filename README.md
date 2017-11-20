@@ -9,4 +9,4 @@ This year's jiga jiga competition at Proof School
 
 ```python3 text.py``` for the text version
 
-```python3 hundred.py``` if you want to see how your bot stacks up aginst other bots (tests all bots 100 times and sums the scores)
+```python3 repeat.py``` if you want to see how your bot stacks up aginst other bots (tests all bots 1000 times and sums the scores)
