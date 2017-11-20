@@ -13,7 +13,7 @@ for _ in range(1000):
     for j in range(5):
         scoresums[game.players[j]] += game.teamscores[j]
 
-print("Sum of scores for all teams:")
+print("Sum of scores for all teams tested 1000 times:")
 
 ordered = sorted(zip(scoresums, names), reverse=True)
 for score, name in ordered:

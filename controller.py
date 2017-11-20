@@ -25,7 +25,7 @@ class Controller:
         self.teamscores = [0] * 5
 
     def setDistances(self):
-        self.distances = [random.randint(x, x + 9) for x in range(10, 40, 10)]
+        self.distances = [random.randint(x, x + 9) for x in [10, 20, 30]]
 
     def gatherBids(self):
         self.bids = []
