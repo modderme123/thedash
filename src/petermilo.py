@@ -33,7 +33,6 @@ def equilizer(pos, funds, dist):
     running = [x[0] for x in enumerate(pos[:3]) if x[1] != 100]
     # If you replace running[0] with 0 it runs better. TODO: Why?
     if len(running) == 1:
-        print(pos[running[0]], pos[0])
         bestdist = 2
         finishing = False
         for j in [2, 1, 0]:
