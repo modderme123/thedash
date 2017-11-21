@@ -1,81 +1,67 @@
-def Equilizer(pos, funds, dist):
-    bid0 = 3000 * dist[0]
-    bid1 = 3000 * dist[1]
-    bid2 = 3000 * dist[2]
-    bids = [0, 0, 0]
-    donecount = [0, 1, 2]
+"""
+██████╗ ███████╗████████╗███████╗██████╗
+██╔══██╗██╔════╝╚══██╔══╝██╔════╝██╔══██╗
+██████╔╝█████╗     ██║   █████╗  ██████╔╝
+██╔═══╝ ██╔══╝     ██║   ██╔══╝  ██╔══██╗
+██║██╗  ███████╗   ██║   ███████╗██║  ██║
+╚═╝██║  ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
+████████╗
+██╔═██╔═╝
+██████║
+╚═════╝
+███╗   ███╗██╗██╗      ██████╗
+████╗ ████║██║██║     ██╔═══██╗
+██╔████╔██║██║██║     ██║   ██║
+██║╚██╔╝██║██║██║     ██║   ██║
+██║ ╚═╝ ██║██║███████╗╚██████╔╝
+╚═╝     ╚═╝╚═╝╚══════╝ ╚═════╝
+"""
 
-    for j in range(3):
-        if pos[j] >= pos[(j + 1) % 3] and pos[j] >= pos[(j + 2) % 3] and (["short", bid0] not in bids):
-            bids[j] = ["short", bid0]
-        elif pos[j] <= pos[(j + 1) % 3] and pos[j] <= pos[(j + 2) % 3] and (["long", bid0] not in bids):
-            bids[j] = ["long", bid2]
-        if pos[j] == 100:
-            donecount.remove(j)
 
-    for j in range(3):
-        if bids[j] == 0:
-            bids[j] = ["medium", bid1]
+def equilizer(pos, funds, dist):
+    """Try and get all runners to the finish line at about the same time"""
+    bid = [0] * 3
+    bid[2] = ["short", 2900 * dist[0]]
+    bid[1] = ["medium", 2900 * dist[1]]
+    bid[0] = ["long", 2900 * dist[2]]
 
-    if len(donecount) == 1:
+    bids = [0] * 3
+
+    for j, k in enumerate(sorted(range(3), key=lambda k: pos[k])):
+        bids[k] = bid[j]
+
+    running = [x[0] for x in enumerate(pos[:3]) if x[1] != 100]
+    # If you replace running[0] with 0 it runs better. TODO: Why?
+    if len(running) == 1:
+        print(pos[running[0]], pos[0])
         bestdist = 2
         finishing = False
-        for j in range(2, -1, -1):
-            if dist[j] + pos[donecount[0]] >= 100:
+        for j in [2, 1, 0]:
+            if dist[j] + pos[running[0]] >= 100:
                 bestdist = j
                 finishing = True
         if finishing:
-            bids[donecount[0]] = [["short", "medium", "long"][bestdist], funds[0]]
+            bids[running[0]] = [["short", "medium", "long"][bestdist], funds[0]]
+
     return bids
 
 
-def RandomEquilizer(pos, funds, dist):
-    import random
-    bid0 = random.randint(2500, 3500) * dist[0]
-    bid1 = random.randint(2500, 3500) * dist[1]
-    bid2 = random.randint(2500, 3500) * dist[2]
-    bids = [0, 0, 0]
-    donecount = [0, 1, 2]
+def skyrocket(pos, funds, dist):
+    """Pay money proportionally to the dist. This lets you get your first two runners in,
+    but then you run out of money before you can get your last runner in"""
+    bid0 = ["short", 3300 * dist[0]]
+    bid1 = ["medium", 3300 * dist[1]]
+    bid2 = ["long", 3300 * dist[2]]
 
-    for j in range(3):
-        if pos[j] >= pos[(j + 1) % 3] and pos[j] >= pos[(j + 2) % 3] and (["short", bid0] not in bids):
-            bids[j] = ["short", bid0]
-        elif pos[j] <= pos[(j + 1) % 3] and pos[j] <= pos[(j + 2) % 3] and (["long", bid0] not in bids):
-            bids[j] = ["long", bid2]
-        if pos[j] == 100:
-            donecount.remove(j)
+    if bid2[1] >= funds[0]:
+        bid2[1] = funds[0]
 
-    for j in range(3):
-        if bids[j] == 0:
-            bids[j] = ["medium", bid1]
-
-    if len(donecount) == 1:
-        bestdist = 2
-        finishing = False
-        for j in range(2, -1, -1):
-            if dist[j] + pos[donecount[0]] >= 100:
-                bestdist = j
-                finishing = True
-        if finishing:
-            bids[donecount[0]] = [["short", "medium", "long"][bestdist], funds[0]]
-    return bids
-
-
-def Skyrocket(pos, funds, dist):
-    bid0 = 3300 * dist[0]
-    bid1 = 3300 * dist[1]
-    bid2 = 3300 * dist[2]
-
-    if bid2 >= funds[0]:
-        bid2 = funds[0]
-
+    bids = [["short", 0], ["short", 0], ["short", 0]]
     if pos[0] != 100:
-        bids = [["long", bid2], ["medium", bid1], ["short", bid0]]
+        bids = [bid2, bid1, bid0]
     elif pos[1] != 100:
-        bids = [["short", bid0], ["long", bid2], ["medium", bid1]]
+        bids = [bid0, bid2, bid1]
     elif pos[2] != 100:
-        bids = [["medium", bid1], ["short", bid0], ["long", bid2]]
-    else:
-        bids = [["short", 0], ["short", 0], ["short", 0]]
+        bids = [bid1, bid0, bid2]
 
     return bids

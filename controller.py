@@ -3,16 +3,15 @@ import random
 from src.drv import *
 from src.petermilo import *
 
-names = [''] * 6
-funcs = [None] * 6
+names = [''] * 5
+funcs = [None] * 5
 # DRV
 names[0], funcs[0] = "Random Runner", randomrunner
 names[1], funcs[1] = "Off Like A Shot", offlikeashot
 names[2], funcs[2] = "Steady Freddy", steadyfreddy
 # PETERMILO
-names[3], funcs[3] = "Equilizer", Equilizer
-names[4], funcs[4] = "Skyrocket", Skyrocket
-names[5], funcs[5] = "RandomEquilizer", RandomEquilizer
+names[3], funcs[3] = "Equilizer", equilizer
+names[4], funcs[4] = "Skyrocket", skyrocket
 
 
 class Controller:
@@ -24,10 +23,10 @@ class Controller:
         self.funds = [1000000] * 5
         self.teamscores = [0] * 5
 
-    def setDistances(self):
+    def set_distances(self):
         self.distances = [random.randint(x, x + 9) for x in [10, 20, 30]]
 
-    def gatherBids(self):
+    def gather_bids(self):
         self.bids = []
         for j in range(5):
             if self.funds[j] >= 0:
@@ -50,19 +49,19 @@ class Controller:
                         mybids[k][0] = 'short'
                 self.bids += mybids
             else:
-                self.bids += 3 * [['short', -1]]
+                self.bids += [['short', -1]] * 3
 
-    def winningBids(self):
+    def winning_bids(self):
         self.winbids = [-1] * 3
         self.winindex = [-1] * 3
-        distDict = {'short': 0, 'medium': 1, 'long': 2}
+        dist_dict = {'short': 0, 'medium': 1, 'long': 2}
         for j in range(15):
-            bidtype = distDict[self.bids[j][0]]
+            bidtype = dist_dict[self.bids[j][0]]
             if self.bids[j][1] > self.winbids[bidtype]:
                 self.winbids[bidtype] = self.bids[j][1]
                 self.winindex[bidtype] = j
 
-    def instantAdvance(self):
+    def instant_advance(self):
         for i in reversed(range(3)):
             if self.winbids[i] >= 0:
                 index = int(self.winindex[i] / 3)
@@ -74,7 +73,7 @@ class Controller:
                     if all(x > 0 for x in self.rankings[index * 3:index * 3 + 3]):
                         self.funds[index] = -1
 
-    def updateScores(self):
+    def update_scores(self):
         for j in range(5):
             score = 0
             for k in range(3):
@@ -82,8 +81,8 @@ class Controller:
                     score += 100 - (self.rankings[3 * j + k] * (self.rankings[3 * j + k] - 1)) / 2
             self.teamscores[j] = int(score)
 
-    def printScores(self):
+    def print_scores(self):
         print("Scores for each of the five teams this round:")
-        ordered = sorted(zip(self.teamscores, [names[j] for j in self.players]), reverse=True)
-        for score, name in ordered:
+        player_names = [names[j] for j in self.players]
+        for score, name in sorted(zip(self.teamscores, player_names), reverse=True):
             print(name + ": " + str(score))

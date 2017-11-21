@@ -2,9 +2,8 @@
 ## INITIALIZING PLAYERS AND PYGAME SCREEN ##
 ############################################
 
-import random
 import pygame
-from controller import *
+from controller import names, Controller
 
 game = Controller()
 
@@ -75,9 +74,9 @@ while any(x >= 0 for x in game.funds) and mainloop:
             if event.key == pygame.K_ESCAPE:
                 break
 
-    game.setDistances()
-    game.gatherBids()
-    game.winningBids()
+    game.set_distances()
+    game.gather_bids()
+    game.winning_bids()
 
     # ADVANCE RUNNERS, DEBIT ACCOUNTS, ASSIGN RANKS AS RUNNERS FINISH
     increments = [0] * 15
@@ -104,10 +103,10 @@ while any(x >= 0 for x in game.funds) and mainloop:
                 if all(x > 0 for x in game.rankings[index * 3:index * 3 + 3]):
                     game.funds[index] = -1
 
-    game.updateScores()
+    game.update_scores()
 
     display()
     pygame.time.wait(200)
 
 pygame.quit()
-game.printScores()
+game.print_scores()

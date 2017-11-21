@@ -1,14 +1,14 @@
-from controller import *
+from controller import names, Controller
 
 scoresums = [0] * len(names)
-for _ in range(1000):
+for _ in range(2000):
     game = Controller()
     while any(x >= 0 for x in game.funds):
-        game.setDistances()
-        game.gatherBids()
-        game.winningBids()
-        game.instantAdvance()
-        game.updateScores()
+        game.set_distances()
+        game.gather_bids()
+        game.winning_bids()
+        game.instant_advance()
+        game.update_scores()
 
     for j in range(5):
         scoresums[game.players[j]] += game.teamscores[j]
