@@ -1,7 +1,7 @@
-from controller import names, Controller
+from controller import names, Controller, vals
 
-scoresums = [0] * len(names)
-for _ in range(2000):
+scoresums = [0] * len(vals)
+for _ in range(10000):
     game = Controller()
     while any(x >= 0 for x in game.funds):
         game.set_distances()
@@ -15,6 +15,6 @@ for _ in range(2000):
 
 print("Sum of scores for all teams tested 1000 times:")
 
-ordered = sorted(zip(scoresums, names), reverse=True)
-for score, name in ordered:
-    print(name + ": " + str(score))
+ordered = sorted(zip(scoresums, range(len(vals))), reverse=True)
+for score, j in ordered:
+    print("Equilizer " + str(vals[j]) + ": " + str(score))

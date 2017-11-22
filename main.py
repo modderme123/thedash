@@ -3,7 +3,7 @@
 ############################################
 
 import pygame
-from controller import names, Controller
+from controller import vals, Controller
 
 game = Controller()
 
@@ -11,7 +11,7 @@ pygame.init()
 screen = pygame.display.set_mode((1000, 650))
 background = pygame.Surface((1000, 650))
 smallfont = pygame.font.SysFont('arial', 20)
-medfont = pygame.font.SysFont('copperplate', 40)
+medfont = pygame.font.SysFont('copperplate', 30)
 largefont = pygame.font.SysFont('georgia', 60)
 
 # DRAW BACKGROUND
@@ -31,7 +31,7 @@ pygame.draw.rect(background, (255, 215, 0), (122, 77, 120, 600), 5)
 pygame.draw.rect(background, (255, 215, 0), (362, 77, 120, 600), 5)
 pygame.draw.rect(background, (255, 215, 0), (2, 588, 600, 30), 5)
 for j in range(5):
-    text = medfont.render(names[game.players[j]], 1, colors[j], (0, 0, 0))
+    text = medfont.render("Equilizer " + str(vals[game.players[j]]), 1, colors[j], (0, 0, 0))
     background.blit(text, (630, 25 + 120 * j))
 
 

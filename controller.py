@@ -13,10 +13,16 @@ names[2], funcs[2] = "Steady Freddy", steadyfreddy
 names[3], funcs[3] = "Equilizer", equilizer
 names[4], funcs[4] = "Skyrocket", skyrocket
 
+vals = []
+for i in range(28, 34):
+    for j in range(28, 34):
+        for k in range(28, 34):
+            vals.append([i, j, k])
+
 
 class Controller:
     def __init__(self):
-        self.players = random.sample(range(len(names)), 5)
+        self.players = random.sample(range(len(vals)), 5)
         self.place = 1
         self.rankings = [0] * 15
         self.positions = [0] * 15
@@ -33,7 +39,7 @@ class Controller:
                 mypos, myfunds = self.positions[:], self.funds[:]
                 myfunds[0], myfunds[j] = myfunds[j], myfunds[0]
                 mypos[0:3], mypos[3 * j:3 * j + 3] = mypos[3 * j:3 * j + 3], mypos[0:3]
-                mybids = funcs[self.players[j]](mypos, myfunds, self.distances)
+                mybids = equilizer(mypos, myfunds, self.distances, vals[self.players[j]])
                 total = 0
                 for k in range(3):
                     value = max(int(mybids[k][1]), 0)
@@ -83,6 +89,6 @@ class Controller:
 
     def print_scores(self):
         print("Scores for each of the five teams this round:")
-        player_names = [names[j] for j in self.players]
+        player_names = ["Equilizer " + str(vals[j]) for j in self.players]
         for score, name in sorted(zip(self.teamscores, player_names), reverse=True):
             print(name + ": " + str(score))
