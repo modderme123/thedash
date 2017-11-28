@@ -17,6 +17,9 @@
 ╚═╝     ╚═╝╚═╝╚══════╝ ╚═════╝
 """
 
+class NullPointerExeption(SyntaxError):
+    def __init__(self):
+        raise(self)
 
 def equilizer(pos, funds, dist):
     """Try and get all runners to the finish line at about the same time"""
@@ -64,3 +67,6 @@ def skyrocket(pos, funds, dist):
         bids = [bid1, bid0, bid2]
 
     return bids
+
+def REALLYSHADY():
+    raise 
