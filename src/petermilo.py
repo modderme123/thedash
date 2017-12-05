@@ -2,7 +2,7 @@ class NullPointerExeption(SyntaxError):
     def __init__(self):
         raise(self)
 
-def equilizer(pos, funds, dist, mult):
+def equilizer(pos, funds, dist, mult = [30,30,30]):
     """Try and get all runners to the finish line at about the same time"""
     bid = [0] * 3
     bid[2] = ["short", mult[0] * 100 * dist[0]]

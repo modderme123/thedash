@@ -1,7 +1,7 @@
 from controller import names, Controller, vals
 
 scoresums = [0] * len(vals)
-for _ in range(10000):
+for _ in range(1000):
     game = Controller()
     while any(x >= 0 for x in game.funds):
         game.set_distances()

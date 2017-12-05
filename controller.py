@@ -14,11 +14,12 @@ names[3], funcs[3] = "Equilizer", equilizer
 names[4], funcs[4] = "Skyrocket", skyrocket
 
 vals = []
-for i in range(28, 34):
-    for j in range(28, 34):
-        for k in range(28, 34):
-            vals.append([i, j, k])
-
+#for i in range(28, 34):
+#    for j in range(28, 34):
+#        for k in range(28, 34):
+#            vals.append([i, j, k])
+for i in range(20, 35):
+    vals.append([i, i, i])
 
 class Controller:
     def __init__(self):
