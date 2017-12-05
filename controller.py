@@ -14,9 +14,18 @@ names[3], funcs[3] = "Equilizer", equilizer
 names[4], funcs[4] = "Skyrocket", skyrocket
 
 
+vals = []
+for i in range(28, 34):
+    for j in range(28, 34):
+        for k in range(28, 34):
+            vals.append([i, j, k])
+#can be used for more in-deapth testing
+#for i in range(20, 35):
+#    vals.append([i, i, i])
+
+
 class Controller:
-    def __init__(self, vals):
-        self.vals = vals
+    def __init__(self):
         self.players = random.sample(range(len(vals)), 5)
         self.place = 1
         self.rankings = [0] * 15
@@ -34,7 +43,7 @@ class Controller:
                 mypos, myfunds = self.positions[:], self.funds[:]
                 myfunds[0], myfunds[j] = myfunds[j], myfunds[0]
                 mypos[0:3], mypos[3 * j:3 * j + 3] = mypos[3 * j:3 * j + 3], mypos[0:3]
-                mybids = equilizer(mypos, myfunds, self.distances, self.vals[self.players[j]])
+                mybids = equilizer(mypos, myfunds, self.distances, vals[self.players[j]])
                 total = 0
                 for k in range(3):
                     value = max(int(mybids[k][1]), 0)
@@ -84,6 +93,6 @@ class Controller:
 
     def print_scores(self):
         print("Scores for each of the five teams this round:")
-        player_names = ["Equilizer " + str(self.vals[j]) for j in self.players]
+        player_names = ["Equilizer " + str(vals[j]) for j in self.players]
         for score, name in sorted(zip(self.teamscores, player_names), reverse=True):
             print(name + ": " + str(score))
