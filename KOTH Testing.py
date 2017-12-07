@@ -91,6 +91,9 @@ for i in range(28, 34):
 King = 0
 
 for j in range(int(input("Amount of testing: "))):
+    if (str(j)[0]!=str(j-1)[0]):
+        print(j)
+    
     competitors = [King]+random.sample([j for j in range(len(vals)) if j!=King],4)
     results = Testrun(vals[competitors[0]],vals[competitors[1]],vals[competitors[2]],vals[competitors[3]],vals[competitors[4]])
     
@@ -103,4 +106,3 @@ total = 0
 for score, j in ordered:
     print("Equilizer " + str(vals[j]) + ": " + str(score))
     total += score
-print(total)
