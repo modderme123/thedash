@@ -90,7 +90,7 @@ for i in range(28, 34):
 King = 0
 
 for j in range(int(input("Amount of testing: "))):
-    competitors = [King]+random.sample(vals,0)
+    competitors = [King]+random.sample(vals,4)
     results = Testrun(vals[competitors[0]],vals[competitors[1]],vals[competitors[2]],vals[competitors[3]],vals[competitors[4]])
     if maxpos(results) == 0:
         points[King] += 1
