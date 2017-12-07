@@ -1,13 +1,14 @@
 import random
+from src.petermilo import equilizer
 
 def Testrun(ai1,ai2,ai3,ai4,ai5):
-    while any(x >= 0 for x in game.funds):
-        players = random.sample(range(len(vals)), 5)
-        place = 1
-        rankings = [0] * 15
-        positions = [0] * 15
-        funds = [1000000] * 5
-        teamscores = [0] * 5
+    players = random.sample(range(len(vals)), 5)
+    place = 1
+    rankings = [0] * 15
+    positions = [0] * 15
+    funds = [1000000] * 5
+    teamscores = [0] * 5
+    while any(x >= 0 for x in funds):
 
         # set distances
         distances = [random.randint(x, x + 9) for x in [10, 20, 30]]
@@ -90,14 +91,16 @@ for i in range(28, 34):
 King = 0
 
 for j in range(int(input("Amount of testing: "))):
-    competitors = [King]+random.sample(vals,4)
+    competitors = [King]+random.sample([j for j in range(len(vals)) if j!=King],4)
     results = Testrun(vals[competitors[0]],vals[competitors[1]],vals[competitors[2]],vals[competitors[3]],vals[competitors[4]])
-    if maxpos(results) == 0:
-        points[King] += 1
-    else:
-        King = competitors[maxpos(results)]
+    
+    King = competitors[maxpos(results)]
+    points[King] += 1
 
 
 ordered = sorted(zip(points, range(len(vals))), reverse=True)
+total = 0
 for score, j in ordered:
     print("Equilizer " + str(vals[j]) + ": " + str(score))
+    total += score
+print(total)
